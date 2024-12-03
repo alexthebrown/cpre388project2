@@ -89,26 +89,21 @@ public class Register extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     FirebaseUser currentUser = mAuth.getCurrentUser();
                                     Map<String, Object> user = new HashMap<>();
-                                    user.put("id", currentUser.getUid());
                                     user.put("name", String.valueOf(nameBox.getText()));
                                     user.put("email", String.valueOf(emailBox.getText()));
                                     user.put("userClass", "public");
                                     user.put("volunteerPoints", 0);
 
 // Add a new document with a generated ID
-                                    db.collection("users")
-                                            .add(user)
-                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                @Override
-                                                public void onSuccess(DocumentReference documentReference) {
-                                                    Log.d("TAG", "DocumentSnapshot added with ID: " + documentReference.getId());
-                                                }
+                                    db.collection("users").document(currentUser.getUid())
+                                            .set(user)
+                                            .addOnSuccessListener(aVoid -> {
+                                                // Successfully written
+                                                Log.d("TAG", "DocumentSnapshot added!");
                                             })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Log.w("TAG", "Error adding document", e);
-                                                }
+                                            .addOnFailureListener(e -> {
+                                                // Handle the error
+                                                Log.e("Firestore", "Error writing document", e);
                                             });
                                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                     startActivity(intent);

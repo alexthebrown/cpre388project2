@@ -7,25 +7,85 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/greetingText"
+<!--    Greeting Bar-->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/hello"
-        android:gravity="center"
-        android:textSize="20sp"/>
+        android:orientation="horizontal">
 
-    <Button
-        android:layout_width="wrap_content"
+
+        <TextView
+            android:id="@+id/greetingText"
+            android:layout_width="0dp"
+            android:layout_weight=".75"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/hello"
+            android:gravity="center"
+            android:textSize="40sp"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:textSize="15sp"
+            android:layout_gravity="center"
+            android:text="@string/logout"
+            android:id="@+id/btn_logout"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:textSize="20sp"
-        android:layout_gravity="center"
-        android:text="@string/logout"
-        android:id="@+id/btn_logout"/>
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_calendar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".5"
+            android:text="@string/view_calendar"
+            app:cornerRadius="16dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight=".5"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_weight=".5"
+                android:text="Button 1"
+                android:layout_gravity="top"
+                app:cornerRadius="16dp"
+                android:id="@+id/button1"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_weight=".5"
+                android:text="Button 2"
+                android:layout_gravity="bottom"
+                app:cornerRadius="16dp"
+                android:id="@+id/button2"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+
+
+
+
 
 
 </LinearLayout>

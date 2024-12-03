@@ -10,4 +10,10 @@
     <string name="repeat_password">Repeat Password</string>
     <string name="name">Name</string>
     <string name="logout">Logout</string>
+    <string name="view_calendar">View Upcoming Events</string>
+    <string name="upcoming_events">Upcoming Events:</string>
+    <string name="location">Location</string>
+    <string name="date">Date</string>
+    <string name="price">Price</string>
+    <string name="event_name">Event Name</string>
 </resources>

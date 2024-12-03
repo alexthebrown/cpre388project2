@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
     TextView greeting;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
-    Button btn_logout;
-    String name;
+    Button btn_logout, btn_calendar;
+    String name, email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,31 +58,52 @@ public class MainActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-//        db.collection("users").whereEqualTo("id", currentUser.getUid()).get()
-//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            DocumentSnapshot document = task.getResult();
-//                            if (document.exists()) {
-//                                name = document.getString("name");
-//                            } else {
-//                                name = currentUser.getEmail();
-//                            }
-//                        } else {
-//                            name = currentUser.getEmail();
-//                        }
-//                    }
-//                });
+        db.collection("users")
+                .document(currentUser.getUid())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            // Get the first document from the query results
+                            name = document.getString("name");
+                            email = document.getString("email");
+                            Log.d("Firestore Output", "Name: " + name + ", Email: " + email);
+                            greeting.setText("Hello " + name + "!");
+                        } else {
+                            // No document found with the matching ID
+                            name = currentUser.getEmail();
+                            greeting.setText("Hello " + name + "!");
+                        }
+                    } else {
+                        // Handle errors while fetching the data
+                        Log.e("FirestoreError", "Error fetching user data", task.getException());
+                        name = currentUser.getEmail();
+
+                        greeting.setText("Hello " + name + "!");
+                    }
+                });
+
+        btn_calendar = findViewById(R.id.btn_calendar);
+        btn_calendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ScheduleList.class);
+                startActivity(intent);
+            }
+        });
+
         btn_logout = findViewById(R.id.btn_logout);
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mAuth.signOut();
+                Intent intent = new Intent(MainActivity.this, Login.class);
+                startActivity(intent);
+                finish();
             }
         });
         greeting = findViewById(R.id.greetingText);
-        greeting.setText("Hello " + currentUser.getEmail() + "!");
 
         String url = "https://sub.iastate.edu/calendar";
 
