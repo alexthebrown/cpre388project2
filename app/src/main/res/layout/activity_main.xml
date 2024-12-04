@@ -35,6 +35,7 @@
             android:textSize="15sp"
             android:layout_gravity="center"
             android:text="@string/logout"
+            android:backgroundTint="@color/sub"
             android:id="@+id/btn_logout"/>
 
 
@@ -48,8 +49,9 @@
         <Button
             android:id="@+id/btn_calendar"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="200dp"
             android:layout_weight=".5"
+            android:backgroundTint="@color/sub"
             android:text="@string/view_calendar"
             app:cornerRadius="16dp"/>
 
@@ -58,34 +60,48 @@
             android:layout_weight=".5"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:id="@+id/execButtons"
+            android:visibility="gone"
             android:orientation="vertical">
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_weight=".5"
-                android:text="Button 1"
+                android:text="View Users"
                 android:layout_gravity="top"
+                android:backgroundTint="@color/sub"
                 app:cornerRadius="16dp"
-                android:id="@+id/button1"/>
+                android:id="@+id/btn_userList"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_weight=".5"
-                android:text="Button 2"
+                android:text="Start Check In"
                 android:layout_gravity="bottom"
+                android:backgroundTint="@color/sub"
                 app:cornerRadius="16dp"
-                android:id="@+id/button2"/>
+                android:id="@+id/btn_execCheckIn"/>
 
         </LinearLayout>
+
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btn_addEvent"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:cornerRadius="16dp"
+        android:backgroundTint="@color/sub"
+        android:text="@string/add_event" />
 
-
-
-
-
-
+    <Button
+        android:id="@+id/btn_checkIn"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:cornerRadius="16dp"
+        android:backgroundTint="@color/sub"
+        android:text="Check In" />
 
 
 </LinearLayout>

@@ -59,7 +59,7 @@ public class ScheduleList extends AppCompatActivity implements RecyclerViewInter
 //        recyclerView.setAdapter(adapter);
         firestore = FirebaseFirestore.getInstance();
 
-        fetchData();
+//        fetchData();
 
         firestore.collection("events").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -69,7 +69,7 @@ public class ScheduleList extends AppCompatActivity implements RecyclerViewInter
                         Log.d("Firestore Output", document.getString("name"));
                         String title = document.getString("name");
                         Timestamp date = document.getTimestamp("date");
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d, yyyy HH:mm", Locale.getDefault());
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d, yyyy hh:mm", Locale.getDefault());
                         String formattedTimestampString = dateFormat.format(date.toDate());
                         String location = document.getString("location");
                         String price = document.getString("price");

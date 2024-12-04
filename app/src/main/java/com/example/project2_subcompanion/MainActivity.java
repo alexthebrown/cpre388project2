@@ -42,8 +42,9 @@ public class MainActivity extends AppCompatActivity {
     TextView greeting;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
-    Button btn_logout, btn_calendar;
+    Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn;
     String name, email;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +107,15 @@ public class MainActivity extends AppCompatActivity {
         greeting = findViewById(R.id.greetingText);
 
         String url = "https://sub.iastate.edu/calendar";
+
+        btn_addEvent = findViewById(R.id.btn_addEvent);
+        btn_addEvent.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ExecCreateEvent.class);
+                startActivity(intent);
+            }
+        });
 
     }
 }
