@@ -1,5 +1,6 @@
 package com.example.project2_subcompanion;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -67,6 +68,7 @@ public class ScheduleList extends AppCompatActivity implements RecyclerViewInter
                 if(task.isSuccessful()) {
                     for(DocumentSnapshot document : task.getResult()) {
                         Log.d("Firestore Output", document.getString("name"));
+                        String id = document.getId();
                         String title = document.getString("name");
                         Timestamp date = document.getTimestamp("date");
                         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d, yyyy hh:mm", Locale.getDefault());
@@ -74,12 +76,12 @@ public class ScheduleList extends AppCompatActivity implements RecyclerViewInter
                         String location = document.getString("location");
                         String price = document.getString("price");
 
-                        CalendarModel calendarItem = new CalendarModel(title, formattedTimestampString, location, price);
+                        CalendarModel calendarItem = new CalendarModel(id, title, formattedTimestampString, location, price);
                         calendarItems.add(calendarItem);
                     }
 
                     // Set adapter after data is fetched
-                    adapter = new CalendarAdapter(calendarItems);
+                    adapter = new CalendarAdapter(calendarItems, ScheduleList.this, ScheduleList.this);
                     recyclerView.setAdapter(adapter);
                 } else {
                     Log.e("Firestore", "Error getting documents: ", task.getException());
@@ -93,7 +95,10 @@ public class ScheduleList extends AppCompatActivity implements RecyclerViewInter
     @Override
     public void onItemClick(int position) {
         // Handle item click here
-        Log.d("RecyclerView", "Item clicked at position: " + position);
+        Intent intent = new Intent(this, CalendarEventFullDetailActivity.class);
+        intent.putExtra("id", calendarItems.get(position).getId());
+        startActivity(intent);
+        Log.d("Clicking Item", "Item clicked at position: " + position);
 
     }
 }

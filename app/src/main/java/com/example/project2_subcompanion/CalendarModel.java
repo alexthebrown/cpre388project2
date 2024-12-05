@@ -3,9 +3,10 @@ package com.example.project2_subcompanion;
 public class CalendarModel {
         private String text;
 
-        private String title, date, location,price;
+        private String id, title, date, location,price;
 
-        public CalendarModel(String title, String date, String location, String price) {
+        public CalendarModel(String id,String title, String date, String location, String price) {
+            this.id = id;
             this.title = title;
             this.date = date;
             this.location = location;
@@ -24,4 +25,5 @@ public class CalendarModel {
         public  String getPrice() {
             return price;
         }
+        public String getId() { return id;}
 }

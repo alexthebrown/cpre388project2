@@ -61,6 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
+        android:id="@+id/event_desc"
         android:text="@string/event_desc"/>
 
     <LinearLayout
@@ -92,7 +93,6 @@
         android:visibility="gone"
         android:text="@string/volunteer"
         android:id="@+id/btn_volunteer"/>
-
 
 
 

@@ -23,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.sql.Time;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ public class ExecCreateEvent extends AppCompatActivity {
     Timestamp timestamp;
     int year, month, day;
     Calendar cal;
+    Date date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,9 @@ public class ExecCreateEvent extends AppCompatActivity {
                 event.put("price", String.valueOf(price.getText()));
                 event.put("description", String.valueOf(description.getText()));
                 event.put("contact", String.valueOf(contact.getText()));
+                date = new Date(cal.getTimeInMillis());
+                timestamp = new Timestamp(date);
+                Log.e("TimeStamp Thing", timestamp.toString());
                 event.put("date", timestamp);
 
 // Add a new document with a generated ID
