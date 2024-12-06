@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class Register extends AppCompatActivity {
 
-    TextView emailBox, passwordBox, passwordRepeatBox, nameBox, clickHere;
+    TextView emailBox, passwordBox, passwordRepeatBox, nameBox, clickHere, studentIdBox;
     Button btn_register;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
@@ -53,13 +53,14 @@ public class Register extends AppCompatActivity {
         passwordBox = findViewById(R.id.password);
         passwordRepeatBox = findViewById(R.id.passwordRepeat);
         nameBox = findViewById(R.id.name);
+        studentIdBox = findViewById(R.id.studentID);
         clickHere = findViewById(R.id.clickHere);
         clickHere.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(Register.this, "I am clicked", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(Register.this, Login.class);
-//                startActivity(intent);
+                Intent intent = new Intent(Register.this, Login.class);
+                startActivity(intent);
             }
         });
         btn_register = findViewById(R.id.btn_register);
@@ -68,6 +69,8 @@ public class Register extends AppCompatActivity {
             public void onClick(View view) {
                 String email = String.valueOf(emailBox.getText());
                 String password = String.valueOf(passwordBox.getText());
+                String name = String.valueOf(nameBox.getText());
+                Integer idNum = Integer.valueOf(String.valueOf(studentIdBox.getText()));
 
                 if(TextUtils.isEmpty(email)){
                     emailBox.setError("Please enter email");
@@ -81,6 +84,15 @@ public class Register extends AppCompatActivity {
                     passwordRepeatBox.setError("Passwords do not match");
                     return;
                 }
+                if(TextUtils.isEmpty(name)){
+                    nameBox.setError("Please enter name");
+                    return;
+                }
+                if(TextUtils.isEmpty(String.valueOf(idNum))){
+                    studentIdBox.setError("Please enter Student ID Number");
+                    return;
+                }
+
 
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -89,10 +101,12 @@ public class Register extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     FirebaseUser currentUser = mAuth.getCurrentUser();
                                     Map<String, Object> user = new HashMap<>();
-                                    user.put("name", String.valueOf(nameBox.getText()));
-                                    user.put("email", String.valueOf(emailBox.getText()));
+                                    user.put("name", name);
+                                    user.put("email", email);
+                                    user.put("studentID", idNum);
                                     user.put("userClass", "public");
                                     user.put("volunteerPoints", 0);
+                                    user.put("checkedInAD", false);
 
 // Add a new document with a generated ID
                                     db.collection("users").document(currentUser.getUid())

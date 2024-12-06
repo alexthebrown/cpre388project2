@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
@@ -28,12 +30,13 @@ public class ExecCreateSignup extends AppCompatActivity {
 
     private TimePickerDialog timePickerDialog;
     private Button timeButton, submitButton;
-    private TextView execNumTV, volNumTV;
+    private TextView execNumTV, volNumTV, heading;
     FirebaseFirestore firestore;
     Timestamp timestamp;
     int year, month, day;
     Calendar cal;
     Date date;
+    String eventId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,7 @@ public class ExecCreateSignup extends AppCompatActivity {
             return insets;
         });
         Intent i = getIntent();
+        eventId = i.getStringExtra("eventID");
         cal = Calendar.getInstance();
         year = cal.get(Calendar.YEAR);
         month = cal.get(Calendar.MONTH);
@@ -54,44 +58,32 @@ public class ExecCreateSignup extends AppCompatActivity {
         initTimePicker();
         firestore = FirebaseFirestore.getInstance();
         timeButton = findViewById(R.id.timePickerButton);
-        timeButton.setText("7:00");
+        int i0 = cal.get(Calendar.HOUR_OF_DAY);
+        int i1 = cal.get(Calendar.MINUTE);
+        timeButton.setText(makeTimeString(i0, i1));
         execNumTV = findViewById(R.id.execNum);
         volNumTV = findViewById(R.id.volNum);
-        DocumentReference eventRef = firestore.collection("event").document(i.getStringExtra("eventID"));
+        heading = findViewById(R.id.heading);
+        getExisting();
+        DocumentReference eventRef = firestore.collection("event").document(eventId);
         submitButton = findViewById(R.id.btn_submit);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Map<String, Object> signup = new HashMap<>();
-                signup.put("execNum", String.valueOf(execNumTV.getText()));
-                signup.put("volNum", String.valueOf(volNumTV.getText()));
+                signup.put("execNum", Integer.valueOf(String.valueOf(execNumTV.getText())));
+                signup.put("volNum", Integer.valueOf(String.valueOf(volNumTV.getText())));
                 date = new Date(cal.getTimeInMillis());
                 timestamp = new Timestamp(date);
                 Log.e("TimeStamp Thing", timestamp.toString());
                 signup.put("volunteerTime", timestamp);
                 signup.put("eventID",eventRef);
 
-                firestore.collection("signups")
-                        .add(signup)
-                        .addOnSuccessListener(documentReference -> {
-                            // Successfully written
-                            String signupId = documentReference.getId();
-
-                            // Update the related event with the signup reference
-                            Map<String, Object> eventUpdate = new HashMap<>();
-                            eventUpdate.put("signup", firestore.collection("signups").document(signupId));
-                            eventRef.update(eventUpdate)
-                                    .addOnSuccessListener(aVoid -> {
-                                        // Successfully updated
-                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                         startActivity(intent);
-                                        Log.d("Firestore", "Event updated with signup reference");
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.e("Firestore", "Error updating event", e);
-                                    });
-
-                            Log.d("TAG", "DocumentSnapshot added!");
+                firestore.collection("signups").document(eventRef.getId())
+                        .set(signup)
+                        .addOnSuccessListener(aVoid -> {
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
                         })
                         .addOnFailureListener(e -> {
                             // Handle the error
@@ -122,6 +114,34 @@ public class ExecCreateSignup extends AppCompatActivity {
 
     public void openTimePicker(View view){
         timePickerDialog.show();
+    }
+
+    private void getExisting(){
+        firestore.collection("signups").document(eventId)
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Map<String, Object> incoming = document.getData();
+                            heading.setText("Edit Signup");
+                            execNumTV.setText(String.valueOf(incoming.get("execNum")));
+                            volNumTV.setText(String.valueOf(incoming.get("volNum")));
+                            Timestamp incomingTimestamp = (Timestamp) incoming.get("volunteerTime");
+                            Date incomingDate = incomingTimestamp.toDate();
+                            cal.setTime(incomingDate);
+                            int i = cal.get(Calendar.HOUR_OF_DAY);
+                            int i1 = cal.get(Calendar.MINUTE);
+                            timeButton.setText(makeTimeString(i, i1));
+                            Log.d("Old Signup data", "DocumentSnapshot data: " + incoming);
+                        }
+                        else{
+                            Log.d("Old Signup data", "No such document");
+                        }
+
+                    } else {
+                        Log.e("Old Signup data", "Error getting documents: ", task.getException());
+                    }
+                });
     }
 
 }
