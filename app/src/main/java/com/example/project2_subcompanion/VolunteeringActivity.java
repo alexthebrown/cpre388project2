@@ -1,5 +1,6 @@
 package com.example.project2_subcompanion;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -20,5 +21,6 @@ public class VolunteeringActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Intent i = getIntent();
     }
 }

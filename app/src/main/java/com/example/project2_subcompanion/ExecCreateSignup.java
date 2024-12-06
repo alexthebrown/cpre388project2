@@ -21,6 +21,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,8 @@ public class ExecCreateSignup extends AppCompatActivity {
     Calendar cal;
     Date date;
     String eventId;
+    Boolean exist;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,7 @@ public class ExecCreateSignup extends AppCompatActivity {
             return insets;
         });
         Intent i = getIntent();
+        exist = false;
         eventId = i.getStringExtra("eventID");
         cal = Calendar.getInstance();
         year = cal.get(Calendar.YEAR);
@@ -78,6 +82,11 @@ public class ExecCreateSignup extends AppCompatActivity {
                 Log.e("TimeStamp Thing", timestamp.toString());
                 signup.put("volunteerTime", timestamp);
                 signup.put("eventID",eventRef);
+                if(!exist){
+                    signup.put("execs", new ArrayList<>());
+                    signup.put("general", new ArrayList<>());
+                }
+
 
                 firestore.collection("signups").document(eventRef.getId())
                         .set(signup)
@@ -132,6 +141,7 @@ public class ExecCreateSignup extends AppCompatActivity {
                             int i = cal.get(Calendar.HOUR_OF_DAY);
                             int i1 = cal.get(Calendar.MINUTE);
                             timeButton.setText(makeTimeString(i, i1));
+                            exist = true;
                             Log.d("Old Signup data", "DocumentSnapshot data: " + incoming);
                         }
                         else{
