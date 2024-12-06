@@ -1,6 +1,8 @@
 
 package com.example.project2_subcompanion;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     TextView greeting;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
-    Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn, btn_readNFC; //not sure how you were seperating admin and user panels
+    Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn;
     String name, email, userLevel;
     LinearLayout execButtons;
 
@@ -60,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
         });
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        btn_checkIn = findViewById(R.id.btn_checkIn);
+        btn_userList = findViewById(R.id.btn_userList);
+        btn_execCheckIn = findViewById(R.id.btn_execCheckIn);
+        execButtons = findViewById(R.id.execButtons);
         FirebaseUser currentUser = mAuth.getCurrentUser();
         db.collection("users")
                 .document(currentUser.getUid())
@@ -127,6 +134,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        btn_userList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ListUsersActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         btn_readNFC = findViewById(R.id.btn_readNFC);
         btn_readNFC.setOnClickListener(new View.OnClickListener() {
