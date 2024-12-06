@@ -92,6 +92,7 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         app:cornerRadius="16dp"
+        android:visibility="gone"
         android:backgroundTint="@color/sub"
         android:text="@string/add_event" />
 
@@ -100,8 +101,9 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         app:cornerRadius="16dp"
+        android:visibility="gone"
         android:backgroundTint="@color/sub"
-        android:text="Check In" />
+        android:text="Claim Seat At AfterDark" />
 
     <Button
         android:id="@+id/btn_readNFC"

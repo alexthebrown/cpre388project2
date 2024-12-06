@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -43,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn, btn_readNFC; //not sure how you were seperating admin and user panels
-    String name, email;
+    String name, email, userLevel;
+    LinearLayout execButtons;
 
 
     @Override
@@ -69,6 +71,15 @@ public class MainActivity extends AppCompatActivity {
                             // Get the first document from the query results
                             name = document.getString("name");
                             email = document.getString("email");
+                            userLevel = document.getString("userClass");
+                            assert userLevel != null;
+                            if (userLevel.equals("exec")){
+                                execButtons.setVisibility(View.VISIBLE);
+                                btn_addEvent.setVisibility(View.VISIBLE);
+                            }
+                            if (document.getBoolean("checkedInAD")){
+                                btn_checkIn.setVisibility(View.VISIBLE);
+                            }
                             Log.d("Firestore Output", "Name: " + name + ", Email: " + email);
                             greeting.setText("Hello " + name + "!");
                         } else {
