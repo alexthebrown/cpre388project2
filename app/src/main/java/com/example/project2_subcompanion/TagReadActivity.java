@@ -1,12 +1,15 @@
 package com.example.project2_subcompanion;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcA;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 
 public class TagReadActivity extends AppCompatActivity {
@@ -34,6 +38,7 @@ public class TagReadActivity extends AppCompatActivity {
 
 
         myNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        tagText = findViewById(R.id.tagText);
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -67,6 +72,7 @@ public class TagReadActivity extends AppCompatActivity {
         // I'm trying to use the NfcA class, if it is not supported by the tag an exception is thrown
         NfcA nfcA = null;
         nfcA = NfcA.get(tag);
+
         if (nfcA == null) {
             output += "This tag is NOT supporting the NfcA class" + "\n";
             output += lineDivider + "\n";
@@ -83,6 +89,31 @@ public class TagReadActivity extends AppCompatActivity {
 
             try {
                 nfcA.connect();
+
+                //TODO: this might be the worst thing I ever wrote
+                // Start reading from page 4 (user memory) up to page 15 (if applicable)
+                for (int page = 4; page < 16; page++) {
+                    // Create a READ command for the page
+                    byte[] command = new byte[] {
+                            (byte) 0x30, // READ command
+                            (byte) page  // Page address
+                    };
+
+                    // Send command and receive data
+                    byte[] response = nfcA.transceive(command);
+
+                    // Convert raw bytes to a readable string (if text data is stored)
+                    String pageData = new String(response, StandardCharsets.UTF_8);
+
+                    Log.d("NFC", "Page " + page + ": " + pageData);
+
+                    if(page == 6){
+                        output += pageData.replaceAll("[^\\x20-\\x7E]", "") + "\n";
+                    }
+                }
+
+
+
                 output += "Connected to the tag using NfcA technology" + "\n";
                 output += lineDivider + "\n";
                 nfcA.close();
@@ -92,13 +123,15 @@ public class TagReadActivity extends AppCompatActivity {
             }
         }
 
-        // final output
+
+
         String finalOutput = output;
         runOnUiThread(() -> {
             tagText.setText(finalOutput); //TODO actual output goes here
         });
+
         // output of the logfile to console
-        System.out.println(output);
+//        System.out.println(output);
         // a short information about the detection of an NFC tag after all reading is done
     }
 
@@ -109,6 +142,12 @@ public class TagReadActivity extends AppCompatActivity {
             if (!myNfcAdapter.isEnabled())
                 showWirelessSettings();
             Bundle options = new Bundle();
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                    this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_IMMUTABLE);
+            IntentFilter[] intentFiltersArray = new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)};
+            myNfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFiltersArray, null);
+
             // Work around for some broken Nfc firmware implementations that poll the card too fast
             options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 250);
             // Enable ReaderMode for all types of card and disable platform sounds
@@ -130,8 +169,12 @@ public class TagReadActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (myNfcAdapter != null)
+        if (myNfcAdapter != null) {
+
+            myNfcAdapter.disableForegroundDispatch(this);
+
             myNfcAdapter.disableReaderMode(this);
+        }
     }
 
     /**
@@ -142,6 +185,36 @@ public class TagReadActivity extends AppCompatActivity {
         Toast.makeText(this, "You need to enable NFC", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            if (tag != null) {
+                // Process the tag here
+                Log.d("NFC", "Tag scanned: " + tag.toString());
+            }
+        }
+    }
+
+    private void enableForegroundDispatch() {
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter != null) {
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                    this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_IMMUTABLE);
+            IntentFilter[] intentFiltersArray = new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)};
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFiltersArray, null);
+        }
+    }
+
+    private void disableForegroundDispatch() {
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
     }
 
     public static String byteToHex(Byte input) {

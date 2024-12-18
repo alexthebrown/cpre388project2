@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     TextView greeting;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
-    Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn, btn_readNFC;
+    Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn, btn_readNFC; //not sure how you were seperating admin and user panels
     String name, email;
 
 
