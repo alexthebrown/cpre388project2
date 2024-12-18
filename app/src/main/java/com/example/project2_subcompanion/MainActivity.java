@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     TextView greeting;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
-    Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn;
+    Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn, btn_readNFC;
     String name, email;
 
 
@@ -113,6 +113,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, ExecCreateEvent.class);
+                startActivity(intent);
+            }
+        });
+
+        btn_readNFC = findViewById(R.id.btn_readNFC);
+        btn_readNFC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, TagReadActivity.class);
                 startActivity(intent);
             }
         });

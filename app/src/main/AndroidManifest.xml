@@ -45,6 +45,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" />
+        <activity
+            android:name=".TagReadActivity"
+            android:exported="true" />
     </application>
-
 </manifest>
