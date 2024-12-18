@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     TextView greeting;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
-    Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn;
+    Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn, btn_readNFC;
     String name, email, userLevel;
     LinearLayout execButtons;
 
