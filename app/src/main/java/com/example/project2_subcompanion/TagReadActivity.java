@@ -118,6 +118,8 @@ public class TagReadActivity extends AppCompatActivity {
         String lineDivider = "--------------------";
         output += "NFC tag detected" + "\n";
 
+        String studentID = "";
+
         // examine tag
         byte[] tagUid = tag.getId();
         output += "Tag UID length: " + tagUid.length  + " UID: " + bytesToHex(tagUid) + "\n";
@@ -152,6 +154,7 @@ public class TagReadActivity extends AppCompatActivity {
             try {
                 nfcA.connect();
 
+
                 //TODO: this might be the worst thing I ever wrote
                 // Start reading from page 4 (user memory) up to page 15 (if applicable)
                 for (int page = 4; page < 16; page++) {
@@ -170,8 +173,9 @@ public class TagReadActivity extends AppCompatActivity {
                     Log.d("NFC", "Page " + page + ": " + pageData);
 
                     if(page == 6){
-                        output += pageData.replaceAll("[^\\x20-\\x7E]", "") + "\n";
-                        checkUserIn(pageData.replaceAll("[^[0-9]*$]", "") + "\n");
+                        output += pageData.replaceAll("[^[0-9]*$]", "") + "\n";
+
+                        studentID = pageData.replaceAll("[^[0-9]*$]", "");
                     }
                 }
 
@@ -188,10 +192,12 @@ public class TagReadActivity extends AppCompatActivity {
 
 
 
-//        String finalOutput = output;
-//        runOnUiThread(() -> {
-//            tagText.setText(finalOutput); //TODO actual output goes here
-//        });
+        String finalOutput = output;
+        runOnUiThread(() -> {
+            tagText.setText(finalOutput); //TODO actual output goes here
+        });
+
+        checkUserIn(studentID);
 
         // output of the logfile to console
 //        System.out.println(output);
