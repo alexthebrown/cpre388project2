@@ -10,14 +10,25 @@ import android.nfc.tech.NfcA;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,7 +38,9 @@ public class TagReadActivity extends AppCompatActivity {
 
     private NfcAdapter myNfcAdapter;
 
-    TextView tagText;
+    TextView tagText, backupText;
+    Button enterButton;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,16 +48,65 @@ public class TagReadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_tagread);
-
-
-        myNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        tagText = findViewById(R.id.tagText);
-
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+        backupText = findViewById(R.id.backupEditText);
+        enterButton = findViewById(R.id.enterButton);
+        enterButton.setOnClickListener(v -> {
+            String studentID = backupText.getText().toString();
+            checkUserIn(studentID);
+        });
+        myNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        tagText = findViewById(R.id.statusTextView);
+    }
+
+    private void checkUserIn(String studentID) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Query to find the user document with the matching studentID
+        Query query = db.collection("users").whereEqualTo("studentID",Integer.parseInt(studentID) );
+        tagText.setText("Checking in...");
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    if (!task.getResult().isEmpty()) {
+                        // User document found
+                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                        boolean checkedInAD = document.getBoolean("checkedInAD");
+
+                        if (!checkedInAD) {
+                            // User is not checked in, update to true
+                            document.getReference().update("checkedInAD", true)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            tagText.setText("Ready To Scan...");
+                                            Toast.makeText(TagReadActivity.this, "User Successfully checked in", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(TagReadActivity.this, "User Check In Failed", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        } else {
+
+                            // User is already checked in, handle accordingly
+                            Toast.makeText(TagReadActivity.this, "User ALREADY CHECKED IN", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        // User document not found, handle accordingly
+                        Toast.makeText(TagReadActivity.this, "No Account Found", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    // Handle the error
+                }
+            }
         });
     }
 
@@ -109,6 +171,7 @@ public class TagReadActivity extends AppCompatActivity {
 
                     if(page == 6){
                         output += pageData.replaceAll("[^\\x20-\\x7E]", "") + "\n";
+                        checkUserIn(pageData.replaceAll("[^[0-9]*$]", "") + "\n");
                     }
                 }
 
@@ -125,10 +188,10 @@ public class TagReadActivity extends AppCompatActivity {
 
 
 
-        String finalOutput = output;
-        runOnUiThread(() -> {
-            tagText.setText(finalOutput); //TODO actual output goes here
-        });
+//        String finalOutput = output;
+//        runOnUiThread(() -> {
+//            tagText.setText(finalOutput); //TODO actual output goes here
+//        });
 
         // output of the logfile to console
 //        System.out.println(output);
