@@ -83,7 +83,8 @@
         android:id="@+id/btn_register"
         android:text="@string/register"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/sub"/>
 
     <TextView
         android:id="@+id/clickHere"

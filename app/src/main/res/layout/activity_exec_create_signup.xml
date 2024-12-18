@@ -75,6 +75,7 @@
         android:layout_height="wrap_content"
         android:text="@string/submit"
         android:layout_gravity="center"
-        android:id="@+id/btn_submit"/>
+        android:id="@+id/btn_submit"
+        android:backgroundTint="@color/sub"/>
 
 </LinearLayout>
