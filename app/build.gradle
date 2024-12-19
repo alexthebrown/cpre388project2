@@ -40,6 +40,7 @@ dependencies {
     implementation libs.firebase.firestore
     implementation libs.contentpager
     implementation libs.play.services.gcm
+    implementation libs.impress
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

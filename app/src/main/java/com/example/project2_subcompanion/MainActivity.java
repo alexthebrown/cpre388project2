@@ -159,6 +159,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btn_checkIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create and show the alert dialog
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Confirm Check Out")
+                        .setMessage("Are you sure youwant to check out?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // User confirmed, proceed with checkUserOut()
+                                checkUserOut();
+                                btn_checkIn.setVisibility(View.GONE);
+                            }
+                        })
+                        .setNegativeButton("No", null) // Do nothing if user cancels
+                        .show();
+            }
+        });
+
 
 //        btn_readNFC = findViewById(R.id.btn_readNFC);
 //        btn_readNFC.setOnClickListener(new View.OnClickListener() {
@@ -169,5 +188,67 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
+    }
+
+    private void checkUserOut() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();if (currentUser != null) {
+            DocumentReference userRef = db.collection("users").document(currentUser.getUid());
+            DocumentReference attendanceRef = db.collection("eventAttendance").document("attendance");
+
+            // Update user's check-in status to false and then decrement "filled"
+            userRef.update("checkedInAD", false)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // User checked out successfully, now decrement "filled"
+                            attendanceRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    if (documentSnapshot.exists()) {
+                                        int filled = documentSnapshot.getLong("filled").intValue();
+
+                                        if (filled > 0) {
+                                            attendanceRef.update("filled", filled - 1)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            // Attendance updated successfully
+                                                            Toast.makeText(MainActivity.this, "User checked out and attendance updated", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Toast.makeText(MainActivity.this, "Failed to update attendance", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                        } else {
+                                            // "filled" is already 0, no need to decrement
+                                            Toast.makeText(MainActivity.this, "User checked out (attendancealready 0)", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } else {
+                                        // Attendance document not found
+                                        Toast.makeText(MainActivity.this, "Attendance document not found", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(MainActivity.this, "Failed to fetch attendance document", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(MainActivity.this, "Failed to check out user", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            // Handle case where current user is null (not logged in)
+            Toast.makeText(MainActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+        }
     }
 }

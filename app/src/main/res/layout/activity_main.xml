@@ -103,7 +103,7 @@
         app:cornerRadius="16dp"
         android:visibility="gone"
         android:backgroundTint="@color/sub"
-        android:text="AfterDark Seat Options" />
+        android:text="Event Seat Options" />
 
 <!--    <Button-->
 <!--        android:id="@+id/btn_readNFC"-->

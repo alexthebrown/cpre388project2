@@ -9,8 +9,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.gcm.Task;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -42,37 +45,48 @@ public class ScanInChoiceActivity extends AppCompatActivity {
             }
         });
 
+//
+
         checkOutGuestsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 WriteBatch batch = db.batch();
+                DocumentReference attendanceRef = db.collection("eventAttendance").document("attendance");
 
-                db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                batch.update(document.getReference(), "checkedInAD", false);
-                            }
-                            batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(ScanInChoiceActivity.this, "Successfully checked out all guests", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(ScanInChoiceActivity.this, "Failed to check out all guests", Toast.LENGTH_SHORT).show();
-                                    }
+                db.collection("users").get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                    batch.update(document.getReference(), "checkedInAD", false);
                                 }
-                            });
-                        } else {
-                            // Handle the error
-                        }
-                    }
-                });
+
+                                // Update "filled" to 0 in"attendance" document
+                                batch.update(attendanceRef, "filled", 0); // This line was misplaced before
+
+                                batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(ScanInChoiceActivity.this, "Successfully checked out all guests and reset attendance", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(ScanInChoiceActivity.this, "Failed to check out all guests or reset attendance", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Handle the error
+                                Toast.makeText(ScanInChoiceActivity.this, "Failed to fetch user data", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
-
         volunteersCheckinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -12,6 +12,7 @@ firebaseAuth = "23.1.0"
 firebaseFirestore = "25.1.1"
 contentpager = "1.0.0"
 playServicesGcm = "17.0.0"
+impress = "0.0.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -25,6 +26,7 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 contentpager = { group = "androidx.contentpager", name = "contentpager", version.ref = "contentpager" }
 play-services-gcm = { group = "com.google.android.gms", name = "play-services-gcm", version.ref = "playServicesGcm" }
+impress = { group = "com.google.ar", name = "impress", version.ref = "impress" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+//import androidx.contentpager.content.Query;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -25,6 +26,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -63,53 +65,141 @@ public class TagReadActivity extends AppCompatActivity {
         tagText = findViewById(R.id.statusTextView);
     }
 
+//    private void checkUserIn(String studentID) {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//
+//        // Query to find the user document with the matching studentID
+//        Query query = db.collection("users").whereEqualTo("studentID",Integer.parseInt(studentID) );
+//        tagText.setText("Checking in...");
+//        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    if (!task.getResult().isEmpty()) {
+//                        // User document found
+//                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+//                        boolean checkedInAD = document.getBoolean("checkedInAD");
+//
+//                        if (!checkedInAD) {
+//                            // User is not checked in, update to true
+//                            document.getReference().update("checkedInAD", true)
+//                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                        @Override
+//                                        public void onSuccess(Void aVoid) {
+//                                            tagText.setText("Ready To Scan...");
+//                                            Toast.makeText(TagReadActivity.this, "User Successfully checked in", Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    })
+//                                    .addOnFailureListener(new OnFailureListener() {
+//                                        @Override
+//                                        public void onFailure(@NonNull Exception e) {
+//                                            Toast.makeText(TagReadActivity.this, "User Check In Failed", Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    });
+//                        } else {
+//
+//                            // User is already checked in, handle accordingly
+//                            Toast.makeText(TagReadActivity.this, "User ALREADY CHECKED IN", Toast.LENGTH_SHORT).show();
+//                        }
+//                    } else {
+//                        // User document not found, handle accordingly
+//                        Toast.makeText(TagReadActivity.this, "No Account Found", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    // Handle the error
+//                }
+//            }
+//        });
+//    }
+
     private void checkUserIn(String studentID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Query to find the user document with the matching studentID
-        Query query = db.collection("users").whereEqualTo("studentID",Integer.parseInt(studentID) );
+        Query query = db.collection("users").whereEqualTo("studentID", Integer.parseInt(studentID));
         tagText.setText("Checking in...");
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    if (!task.getResult().isEmpty()) {
-                        // User document found
-                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                        boolean checkedInAD = document.getBoolean("checkedInAD");
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    // User document found
+                    DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                    boolean checkedInAD = document.getBoolean("checkedInAD");
 
-                        if (!checkedInAD) {
-                            // User is not checked in, update to true
-                            document.getReference().update("checkedInAD", true)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            tagText.setText("Ready To Scan...");
-                                            Toast.makeText(TagReadActivity.this, "User Successfully checked in", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(TagReadActivity.this, "User Check In Failed", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        } else {
+                    if (!checkedInAD) {
+                        // User is not checked in, proceed with attendance update first
+                        DocumentReference attendanceRef = db.collection("eventAttendance").document("attendance");
 
-                            // User is already checked in, handle accordingly
-                            Toast.makeText(TagReadActivity.this, "User ALREADY CHECKED IN", Toast.LENGTH_SHORT).show();
-                        }
+                        attendanceRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot.exists()) {
+                                    int filled = documentSnapshot.getLong("filled").intValue();
+                                    int capacity = documentSnapshot.getLong("capacity").intValue();
+
+                                    if (filled < capacity) {
+                                        // Increment "filled" and then update user's check-in status
+                                        attendanceRef.update("filled", filled + 1)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        // Attendance updated successfully, now update user's check-in status
+                                                        document.getReference().update("checkedInAD", true)
+                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        tagText.setText("Ready To Scan...");
+                                                                        Toast.makeText(TagReadActivity.this, "User Successfully checked in", Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        Toast.makeText(TagReadActivity.this, "User Check In Failed", Toast.LENGTH_SHORT).show();
+                                                                        // You might want to decrement "filled" here if user check-in fails
+                                                                        attendanceRef.update("filled", filled); // Decrement filled
+                                                                    }
+                                                                });
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(TagReadActivity.this, "Failed to update attendance", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    } else {
+                                        // Room is at capacity
+                                        Toast.makeText(TagReadActivity.this, "Room is at capacity", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    // Attendance document not found
+                                    Toast.makeText(TagReadActivity.this, "Attendance document not found", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(TagReadActivity.this, "Failed to fetch attendance document", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     } else {
-                        // User document not found, handle accordingly
-                        Toast.makeText(TagReadActivity.this, "No Account Found", Toast.LENGTH_SHORT).show();
+                        // User is already checked in
+                        Toast.makeText(TagReadActivity.this, "User ALREADY CHECKED IN", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    // Handle the error
+                    // User document not found
+                    Toast.makeText(TagReadActivity.this, "No Account Found", Toast.LENGTH_SHORT).show();
                 }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(TagReadActivity.this, "Failed to fetch user document", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 
 
 
