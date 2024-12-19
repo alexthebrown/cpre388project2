@@ -116,6 +116,8 @@ public class VolunteersCheckInActivity extends AppCompatActivity {
         String lineDivider = "--------------------";
         output += "NFC tag detected" + "\n";
 
+        String studentID = "";
+
         // examine tag
         byte[] tagUid = tag.getId();
         output += "Tag UID length: " + tagUid.length  + " UID: " + bytesToHex(tagUid) + "\n";
@@ -169,7 +171,8 @@ public class VolunteersCheckInActivity extends AppCompatActivity {
 
                     if(page == 6){
                         output += pageData.replaceAll("[^\\x20-\\x7E]", "") + "\n";
-                        checkUserIn(pageData.replaceAll("[^[0-9]*$]", "") + "\n");
+//                        checkUserIn(pageData.replaceAll("[^[0-9]*$]", "") + "\n");
+                        studentID = pageData.replaceAll("[^[0-9]*$]", "");
                     }
                 }
 
@@ -190,6 +193,7 @@ public class VolunteersCheckInActivity extends AppCompatActivity {
 //        runOnUiThread(() -> {
 //            tagText.setText(finalOutput); //TODO actual output goes here
 //        });
+        checkUserIn(studentID);
 
         // output of the logfile to console
 //        System.out.println(output);

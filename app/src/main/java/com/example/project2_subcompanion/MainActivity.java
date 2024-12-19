@@ -43,12 +43,13 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView greeting;
+    TextView greeting, volunteerPoints;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     Button btn_logout, btn_calendar, btn_addEvent, btn_checkIn, btn_userList, btn_execCheckIn, btn_readNFC;
     String name, email, userLevel;
     LinearLayout execButtons;
+    Long points;
 
 
     @Override
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         btn_execCheckIn = findViewById(R.id.btn_execCheckIn);
         execButtons = findViewById(R.id.execButtons);
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        volunteerPoints = findViewById(R.id.volunteerPointsTextView);
         db.collection("users")
                 .document(currentUser.getUid())
                 .get()
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                             name = document.getString("name");
                             email = document.getString("email");
                             userLevel = document.getString("userClass");
+                            points = document.getLong("volunteerPoints");
                             assert userLevel != null;
                             if (userLevel.equals("exec")){
                                 execButtons.setVisibility(View.VISIBLE);
@@ -89,10 +92,12 @@ public class MainActivity extends AppCompatActivity {
                             }
                             Log.d("Firestore Output", "Name: " + name + ", Email: " + email);
                             greeting.setText("Hello " + name + "!");
+                            volunteerPoints.setText("Volunteer Points: " + points);
                         } else {
                             // No document found with the matching ID
                             name = currentUser.getEmail();
                             greeting.setText("Hello " + name + "!");
+                            volunteerPoints.setVisibility(View.GONE);
                         }
                     } else {
                         // Handle errors while fetching the data
@@ -100,8 +105,11 @@ public class MainActivity extends AppCompatActivity {
                         name = currentUser.getEmail();
 
                         greeting.setText("Hello " + name + "!");
+                        volunteerPoints.setVisibility(View.GONE);
                     }
                 });
+
+
 
         btn_calendar = findViewById(R.id.btn_calendar);
         btn_calendar.setOnClickListener(new View.OnClickListener() {
