@@ -143,15 +143,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        btn_readNFC = findViewById(R.id.btn_readNFC);
-        btn_readNFC.setOnClickListener(new View.OnClickListener() {
+        btn_execCheckIn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, TagReadActivity.class);
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ScanInChoiceActivity.class);
                 startActivity(intent);
             }
         });
+
+
+//        btn_readNFC = findViewById(R.id.btn_readNFC);
+//        btn_readNFC.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, TagReadActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
     }
 }

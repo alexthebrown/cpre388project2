@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ScanInChoiceActivity"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Event Options"
+        android:textSize="40dp"/>
+
+    <Button
+        android:id="@+id/checkInGuests"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/sub"
+        android:text="Check In Guests"/>
+
+    <Button
+        android:id="@+id/roomOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/sub"
+        android:text="Room Capacity Options"/>
+
+    <Button
+        android:id="@+id/checkOutGuests"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/sub"
+        android:text="Check Out All Guests"/>
+
+    <Button
+        android:id="@+id/volunteersCheckinButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/sub"
+        android:text="Check In Volunteers"/>
+
+</LinearLayout>
