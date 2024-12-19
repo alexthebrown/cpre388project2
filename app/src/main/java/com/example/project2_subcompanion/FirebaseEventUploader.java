@@ -5,7 +5,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.List;
 import java.util.Map;
-
+/**
+ * @author Alex Brown
+ * Unused code but im scared to delete stuff
+ */
 public class FirebaseEventUploader {
 
     private FirebaseFirestore db;

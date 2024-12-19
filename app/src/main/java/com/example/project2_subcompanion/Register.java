@@ -30,6 +30,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Alex Brown
+ * Firebase auth form for creating a new user, also creates an entry in the firestore database using the same id for easy lookup
+ */
 public class Register extends AppCompatActivity {
 
     TextView emailBox, passwordBox, passwordRepeatBox, nameBox, clickHere, studentIdBox;

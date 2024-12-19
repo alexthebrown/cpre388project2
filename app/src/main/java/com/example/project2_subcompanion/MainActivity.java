@@ -40,7 +40,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * @author Alex Brown
+ * Main landing page for all users. Only shows buttons to pages that user has the ability to visit.
+ */
 public class MainActivity extends AppCompatActivity {
 
     TextView greeting, volunteerPoints;

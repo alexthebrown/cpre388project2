@@ -1,5 +1,9 @@
 package com.example.project2_subcompanion;
 
+/**
+ * @author Alex Brown
+ * Holds user information for multiple different user lists
+ */
 public class UserModel {
     private String text;
 

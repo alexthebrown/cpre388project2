@@ -32,6 +32,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * @author Alex Brown
+ * Shows all calendar items in a recycler view.
+ */
 public class ScheduleList extends AppCompatActivity implements RecyclerViewInterface {
 
     FirebaseFirestore firestore;

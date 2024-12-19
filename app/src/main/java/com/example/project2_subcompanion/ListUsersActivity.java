@@ -29,7 +29,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
-
+/**
+ * @author Alex Brown
+ * Lists users and allows execs to alter their user class to public or vice versa
+ */
 public class ListUsersActivity extends AppCompatActivity implements RecyclerViewInterface {
 
     FirebaseFirestore firestore;

@@ -14,6 +14,10 @@ import com.google.firebase.firestore.auth.User;
 
 import java.util.List;
 
+/**
+ * @author Alex Brown
+ * Adapter for the user list recycler view
+ */
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private List<UserModel> userList;
     private Context context;

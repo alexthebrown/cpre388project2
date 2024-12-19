@@ -18,7 +18,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
-
+/**
+ * @author Alex Brown
+ * Menu for execs to choose what they need to do in terms of check in stuff
+ */
 public class ScanInChoiceActivity extends AppCompatActivity {
 
     @Override

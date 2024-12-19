@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * @author Alex Brown & Blake Hardy
+ * This is an adapter to display the events in the calendar.
+ */
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHolder> {
 
     private List<CalendarModel> calendarList;

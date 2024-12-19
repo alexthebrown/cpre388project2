@@ -1,5 +1,9 @@
 package com.example.project2_subcompanion;
 
+/**
+ * @author Alex Brown & Blake Hardy
+ * Model to hold Calendar events. Used in CalendarActivity. Contains standard getters and setters.
+ */
 public class CalendarModel {
         private String text;
 

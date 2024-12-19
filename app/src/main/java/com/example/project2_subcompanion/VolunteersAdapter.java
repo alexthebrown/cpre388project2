@@ -12,8 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @author Alex Brown
+ * Adapter to display list of volunteers for the volunteering activity
+ */
 public class VolunteersAdapter extends RecyclerView.Adapter<VolunteersAdapter.ViewHolder> {
     private List<UserModel> volunteers;
     private Context context;
@@ -70,6 +74,11 @@ public class VolunteersAdapter extends RecyclerView.Adapter<VolunteersAdapter.Vi
     @Override
     public int getItemCount() {
         return volunteers.size();
+    }
+
+    public void updateVolunteers(ArrayList<UserModel> newVolunteers) {
+        this.volunteers = newVolunteers; // Update the adapter's data
+        notifyDataSetChanged(); // Notify the adapter of the data change
     }
 
 

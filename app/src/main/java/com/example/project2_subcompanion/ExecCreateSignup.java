@@ -27,6 +27,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Alex Brown
+ * Controller for the page where exec users can create signups for events in firebase
+ */
 public class ExecCreateSignup extends AppCompatActivity {
 
     private TimePickerDialog timePickerDialog;
@@ -125,6 +129,10 @@ public class ExecCreateSignup extends AppCompatActivity {
         timePickerDialog.show();
     }
 
+    /**
+     * @author Alex Brown
+     * Pulls existing time data and converts it for use in the popup dialog
+     */
     private void getExisting(){
         firestore.collection("signups").document(eventId)
                 .get().addOnCompleteListener(task -> {

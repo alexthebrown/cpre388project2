@@ -32,6 +32,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * @author Alex Brown
+ * Copy of TagReadActivity but instead increments the volunteer points of the user by 2 points.
+ */
 public class VolunteersCheckInActivity extends AppCompatActivity {
 
 

@@ -22,6 +22,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+
+/**
+ * @author Alex Brown & Blake Hardy
+ * Controller for the Calendar Event Full Detail Activity
+ */
 public class CalendarEventFullDetailActivity extends AppCompatActivity {
     TextView title, date, location, price, description;
     String documentID;
@@ -40,12 +45,20 @@ public class CalendarEventFullDetailActivity extends AppCompatActivity {
             return insets;
         });
         auth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
         firestore.collection("users").document(auth.getCurrentUser().getUid()).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         Log.d("userClass", "In the onSuccess");
+
                         userClass = documentSnapshot.getString("userClass");
+                        if(userClass != null && userClass.equals("exec")){
+                            Log.d("userClass", "In the if");
+                            edit.setVisibility(View.VISIBLE);
+                            signup.setVisibility(View.VISIBLE);
+
+                        }
                     }
                 });
         title = findViewById(R.id.event_name);
@@ -82,11 +95,6 @@ public class CalendarEventFullDetailActivity extends AppCompatActivity {
 //                startActivity(intent);
             }
         });
-        if(userClass.equals("exec")){
-            Log.d("userClass", "In the if");
-            edit.setVisibility(View.VISIBLE);
-            signup.setVisibility(View.VISIBLE);
-        };
         firestore = FirebaseFirestore.getInstance();
         firestore.collection("events").document(documentID).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

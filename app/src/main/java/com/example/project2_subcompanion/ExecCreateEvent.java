@@ -27,6 +27,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Alex Brown
+ * Controller for the page where exec users can create events in firebase
+ */
 public class ExecCreateEvent extends AppCompatActivity {
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;

@@ -18,6 +18,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * @author Alex Brown
+ * Allows exec users to update the capacity of an event and view how much of the capacity is filled.
+ */
 public class RoomOptionsActivity extends AppCompatActivity {
 
     private ProgressBar attendanceProgressBar;

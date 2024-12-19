@@ -35,7 +35,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-
+/**
+ * @author Blake Hardy
+ * Reads cards that are presented to device and extracts the student ID. Sets their account as checked in. Also provides a typing version and as a backup.
+ */
 public class TagReadActivity extends AppCompatActivity {
 
     private NfcAdapter myNfcAdapter;

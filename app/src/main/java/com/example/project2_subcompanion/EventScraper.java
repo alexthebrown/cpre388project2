@@ -16,6 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Alex Brown & Blake Hardy
+ * Failed attempt to make an event scraper
+ */
 public class EventScraper {
 
     public List<Map<String, String>> scrapeEvents(String url) {
